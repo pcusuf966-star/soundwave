@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoundWave | GitHub Pages</title>
+    <style>
+        :root {
+            --neon-cyan: #00f7ff;
+            --neon-pink: #ff00ff;
+            --neon-green: #00ffaa;
+            --dark-bg: #0a0a16;
+            --card-bg: rgba(20, 20, 40, 0.85);
+            --text-light: #ffffff;
+            --text-muted: #8888cc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: var(--dark-bg);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 247, 255, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 0, 255, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 40% 90%, rgba(0, 255, 170, 0.05) 0%, transparent 20%);
+        }
+
+        .header {
+            background: rgba(10, 10, 22, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 2rem;
+            border-bottom: 2px solid transparent;
+            border-image: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink)) 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-decoration: none;
+            transition: transform 0.3s;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .nav {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .nav a:hover {
+            background: rgba(0, 247, 255, 0.1);
+            color: var(--text-light);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .page-title {
+            text-align: center;
+            margin: 3rem 0;
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .sound-button {
+            background: var(--card-bg);
+            border: 1px solid rgba(0, 247, 255, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            color: var(--text-light);
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s;
+            backdrop-filter: blur(5px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            min-height: 140px;
+            justify-content: center;
+            position: relative;
+        }
+
+        .sound-button:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 10px 20px rgba(0, 247, 255, 0.2);
+        }
+
+        .sound-button.playing {
+            background: rgba(0, 247, 255, 0.15);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 247, 255, 0.4);
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255, 50, 50, 0.8);
+            border: none;
+            border-radius: 50%;
+            width: 1.8rem;
+            height: 1.8rem;
+            color: white;
+            font-size: 0.9rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sound-button:hover .delete-btn {
+            opacity: 1;
+        }
+
+        .button-icon {
+            font-size: 2.5rem;
+        }
+
+        .add-sound-form {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 3rem;
+            border: 2px dashed rgba(0, 247, 255, 0.3);
+        }
+
+        .form-title {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--neon-cyan);
+            font-size: 1.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-grid input {
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 247, 255, 0.3);
+            background: rgba(0, 0, 0, 0.3);
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        .form-grid input:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 10px rgba(0, 247, 255, 0.3);
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+            border: none;
+            border-radius: 8px;
+            color: black;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .submit-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(0, 247, 255, 0.2);
+            font-size: 0.9rem;
+            background: rgba(10, 10, 22, 0.8);
+        }
+
+        .empty-state {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .github-badge {
+            display: inline-block;
+            background: #24292e;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .github-badge:hover {
+            background: #444;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .nav {
+                justify-content: center;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .buttons-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .buttons-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 0 1rem;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <a href="#" class="logo">SoundWave</a>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <nav class="nav">
+                <a href="#sounds">Звуки</a>
+                <a href="#add">Добавить</a>
+                <a href="#help">Помощь</a>
+            </nav>
+            <a href="https://github.com/yourusername/soundwave" class="github-badge" target="_blank">
+                GitHub 🚀
+            </a>
+        </div>
+    </header>
+
+    <main class="container">
+        <h1 class="page-title">SoundWave на GitHub Pages</h1>
+        
+        <div style="text-align: center; margin-bottom: 2rem; color: var(--text-muted);">
+            <p>Сайт полностью работает через GitHub. Добавляй звуки — они сохранятся в твоём браузере.</p>
+        </div>
+        
+        <div class="buttons-grid" id="soundboard">
+            <!-- Звуки будут добавляться сюда -->
+        </div>
+        
+        <div class="add-sound-form" id="add">
+            <h2 class="form-title">Добавить новый звук</h2>
+            <div class="form-grid">
+                <input type="text" id="soundName" placeholder="Название звука" required>
+                <input type="url" id="soundUrl" placeholder="Ссылка на MP3 файл" required>
+                <input type="text" id="soundEmoji" placeholder="Эмодзи (например: 🔊)" value="🔊" required>
+            </div>
+            <button class="submit-btn" onclick="addSound()">Добавить звук</button>
+        </div>
+        
+        <div style="background: var(--card-bg); border-radius: 12px; padding: 1.5rem; margin-top: 2rem;">
+            <h3 style="color: var(--neon-green); margin-bottom: 1rem;">📌 Как развернуть на GitHub Pages:</h3>
+            <ol style="margin-left: 1.5rem; line-height: 1.6;">
+                <li>Создай репозиторий на GitHub с именем <code>soundwave</code></li>
+                <li>Загрузи эти два файла (<code>index.html</code> и <code>README.md</code>)</li>
+                <li>В настройках репозитория включи <strong>GitHub Pages</strong></li>
+                <li>Выбери ветку <code>main</code> и папку <code>/root</code></li>
+                <li>Сайт будет доступен по адресу: <code>https://твой-ник.github.io/soundwave/</code></li>
+            </ol>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>© 2024 SoundWave | Размещено на GitHub Pages</p>
+        <p style="margin-top: 0.5rem;">
+            Сайт работает полностью на клиенте. Данные сохраняются в вашем браузере.
+        </p>
+    </footer>
+
+    <script>
+        // Конфигурация
+        const STORAGE_KEY = 'soundwave_data_v3';
+        let sounds = [];
+        let currentAudio = null;
+        
+        // DOM элементы
+        const soundboard = document.getElementById('soundboard');
+        
+        // Инициализация
+        function init() {
+            loadSounds();
+            renderButtons();
+            setupEventListeners();
+            
+            // Показать демо-звуки при первом запуске
+            if (sounds.length === 0) {
+                addDemoSounds();
+            }
+        }
+        
+        // Загрузка звуков из LocalStorage
+        function loadSounds() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    if (data.sounds && Array.isArray(data.sounds)) {
+                        sounds = data.sounds;
+                    }
+                }
+            } catch (e) {
+                console.error('Ошибка загрузки:', e);
+            }
+        }
+        
+        // Сохранение звуков
+        function saveSounds() {
+            try {
+                const data = {
+                    sounds: sounds,
+                    updated: new Date().toISOString(),
+                    version: '3.0'
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            } catch (e) {
+                console.error('Ошибка сохранения:', e);
+            }
+        }
+        
+        // Отрисовка кнопок
+        function renderButtons() {
+            soundboard.innerHTML = '';
+            
+            if (sounds.length === 0) {
+                soundboard.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🎵</div>
+                        <h3>Звуков пока нет</h3>
+                        <p>Добавьте первый звук!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            sounds.forEach((sound, index) => {
+                const button = document.createElement('button');
+                button.className = 'sound-button';
+                button.innerHTML = `
+                    <button class="delete-btn" onclick="deleteSound(${index})" title="Удалить звук">×</button>
+                    <span class="button-icon">${sound.icon}</span>
+                    <span>${sound.name}</span>
+                `;
+                
+                button.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('delete-btn')) return;
+                    playSound(sound, button);
+                });
+                
+                soundboard.appendChild(button);
+            });
+        }
+        
+        // Воспроизведение звука
+        function playSound(sound, buttonElement) {
+            if (currentAudio && !currentAudio.paused) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+                document.querySelectorAll('.sound-button.playing').forEach(btn => {
+                    btn.classList.remove('playing');
+                });
+            }
+            
+            const audio = new Audio(sound.file);
+            
+            audio.addEventListener('error', () => {
+                const originalHTML = buttonElement.innerHTML;
+                buttonElement.innerHTML = `
+                    <button class="delete-btn" onclick="deleteSound(${sounds.indexOf(sound)})">×</button>
+                    <span class="button-icon">❌</span>
+                    <span>Ошибка</span>
+                `;
+                setTimeout(() => {
+                    buttonElement.innerHTML = originalHTML;
+                }, 2000);
+            });
+            
+            audio.play();
+            currentAudio = audio;
+            buttonElement.classList.add('playing');
+            
+            audio.addEventListener('ended', () => {
+                buttonElement.classList.remove('playing');
+            });
+        }
+        
+        // Добавление звука
+        function addSound() {
+            const name = document.getElementById('soundName').value.trim();
+            const url = document.getElementById('soundUrl').value.trim();
+            const emoji = document.getElementById('soundEmoji').value.trim() || '🔊';
+            
+            // Валидация
+            if (!name || !url) {
+                showNotification('Заполните все поля', 'error');
+                return;
+            }
+            
+            if (!isValidUrl(url)) {
+                showNotification('Введите корректную ссылку', 'error');
+                return;
+            }
+            
+            // Добавление
+            sounds.push({
+                id: Date.now(),
+                name: name,
+                icon: emoji,
+                file: url,
+                added: new Date().toISOString()
+            });
+            
+            // Сохранение и отрисовка
+            saveSounds();
+            renderButtons();
+            
+            // Очистка формы
+            document.getElementById('soundName').value = '';
+            document.getElementById('soundUrl').value = '';
+            document.getElementById('soundEmoji').value = '🔊';
+            
+            showNotification(`Звук "${name}" добавлен!`, 'success');
+        }
+        
+        // Удаление звука
+        function deleteSound(index) {
+            if (confirm(`Удалить звук "${sounds[index].name}"?`)) {
+                sounds.splice(index, 1);
+                saveSounds();
+                renderButtons();
+                showNotification('Звук удалён', 'info');
+            }
+        }
+        
+        // Демо-звуки
+        function addDemoSounds() {
+            const demoSounds = [
+                {
+                    name: 'Apple Pay',
+                    icon: '🍏',
+                    file: 'https://www.myinstants.com/media/sounds/apple-pay.mp3'
+                },
+                {
+                    name: 'Dota 2 Рошан',
+                    icon: '⚔️',
+                    file: 'https://www.myinstants.com/media/sounds/dota2-roshan.mp3'
+                },
+                {
+                    name: 'Мем Bruh',
+                    icon: '😑',
+                    file: 'https://www.myinstants.com/media/sounds/bruh-sound.mp3'
+                }
+            ];
+            
+            demoSounds.forEach(sound => {
+                sounds.push({
+                    id: Date.now() + Math.random(),
+                    name: sound.name,
+                    icon: sound.icon,
+                    file: sound.file,
+                    added: new Date().toISOString(),
+                    isDemo: true
+                });
+            });
+            
+            saveSounds();
+            renderButtons();
+        }
+        
+        // Уведомления
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 8px;
+                background: ${type === 'success' ? 'rgba(0, 255, 170, 0.9)' : 
+                            type === 'error' ? 'rgba(255, 50, 50, 0.9)' : 
+                            'rgba(0, 247, 255, 0.9)'};
+                color: black;
+                font-weight: bold;
+                z-index: 9999;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                animation: slideIn 0.3s ease;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        // Валидация URL
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+        
+        // Настройка событий
+        function setupEventListeners() {
+            // Enter в форме
+            const inputs = document.querySelectorAll('.form-grid input');
+            inputs.forEach(input => {
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        addSound();
+                    }
+                });
+            });
+            
+            // Автосохранение при закрытии
+            window.addEventListener('beforeunload', () => {
+                saveSounds();
+            });
+        }
+        
+        // Экспорт/Импорт
+        function exportSounds() {
+            const data = {
+                sounds: sounds,
+                exported: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `soundwave_backup_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showNotification('Звуки экспортированы в файл', 'success');
+        }
+        
+        function importSounds(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.sounds && Array.isArray(data.sounds)) {
+                        sounds = data.sounds;
+                        saveSounds();
+                        renderButtons();
+                        showNotification(`Импортировано ${sounds.length} звуков`, 'success');
+                    }
+                } catch (error) {
+                    showNotification('Ошибка при импорте файла', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+        
+        // Добавляем кнопки управления в футер
+        function addControlButtons() {
+            const controls = document.createElement('div');
+            controls.style.cssText = 'text-align: center; margin-top: 1rem;';
+            controls.innerHTML = `
+                <button onclick="exportSounds()" style="
+                    padding: 0.5rem 1rem;
+                    margin: 0.5rem;
+                    background: rgba(0, 247, 255, 0.2);
+                    border: 1px solid var(--neon-cyan);
+                    border-radius: 6px;
+                    color: var(--text-light);
+                    cursor: pointer;
+                ">📥 Экспорт</button>
+                
+                <label style="
+                    padding: 0.5rem 1rem;
+                    margin: 0.5rem;
+                    background: rgba(255, 0, 255, 0.2);
+                    border: 1px solid var(--neon-pink);
+                    border-radius: 6px;
+                    color: var(--text-light);
+                    cursor: pointer;
+                    display: inline-block;
+                ">
+                    📤 Импорт
+                    <input type="file" accept=".json" onchange="importSounds(event)" style="display: none;">
+                </label>
+            `;
+            
+            document.querySelector('.footer').appendChild(controls);
+        }
+        
+        // Запуск при загрузке
+        document.addEventListener('DOMContentLoaded', () => {
+            // Добавляем анимации
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            init();
+            addControlButtons();
+        });
+    </script>
+</body>
+</html>
